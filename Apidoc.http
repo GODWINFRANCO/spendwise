@@ -9,23 +9,33 @@ Content-Type: application/json
     "password":"password@123"
 }
 
+#api call for token generation
+###
+POST http://127.0.0.1:8000/v1/spending/token/
+Content-Type: application/json
+
+{
+    "username":"user",
+    "password":"password@123"
+}
+
 #api call for current details
 ###
 GET http://127.0.0.1:8000/v1/spending/me/
 Accept: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 #api call for list expense
 ###
 GET http://127.0.0.1:8000/v1/spending/expense/
 Accept: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 #api call for adding expense
 ###
 POST http://127.0.0.1:8000/v1/spending/expense/
 Content-Type: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 {
     "title":"school fee",
@@ -39,18 +49,18 @@ Authorization: Basic user:password@123
 ###
 GET http://127.0.0.1:8000/v1/spending/expense/1/
 Accept: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 #api call for update expense
 ###
 PUT  http://127.0.0.1:8000/v1/spending/expense/1/
 Content-Type: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 {
-    "id": 3,
+    "id": 1,
     "title": "school fee",
-    "amount": "3000.00",
+    "amount": "300.00",
     "category": "BILLS",
     "priority": "need",
     "payment_method": "upi",
@@ -63,5 +73,5 @@ Authorization: Basic user:password@123
 ###
 DELETE  http://127.0.0.1:8000/v1/spending/expense/1/
 Accept: application/json
-Authorization: Basic user:password@123
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 

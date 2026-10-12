@@ -7,8 +7,10 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework import permissions
 
+
 from spending.serializers import SignupSerializer,Expenseserializer
 from spending.models import Expense
+from spending.permissions import IsOwner
 # Create your views here.
 
 class Signupview(APIView):
@@ -27,21 +29,25 @@ class Signupview(APIView):
 
 class GetMeView(APIView):
 
-    authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
 
     permission_classes =[permissions.IsAuthenticated]
 
     def get(self,request):
 
         auth_user = request.user
+
         instance =User.objects.get(username=auth_user)
+
+        self.check_object_permissions(request,instance)
+
         serializer_instance = SignupSerializer(instance)
 
         return Response(data=serializer_instance.data)
 
 class ExpenseListCreateView(APIView):
 
-    authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
     
     permission_classes =[permissions.IsAuthenticated]
 
@@ -71,13 +77,17 @@ class ExpenseListCreateView(APIView):
             
 class ExpenseRetrieveUpdateDeleteView(APIView):
 
-    authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
         
-    permission_classes =[permissions.IsAuthenticated]
+    #permission_classes =[permissions.IsAuthenticated]
+
+    permission_classes = [IsOwner]
 
     def get(self,request,pk=None):
         
         instance = get_object_or_404(Expense,id=pk)
+
+        self.check_object_permissions(request,instance)
 
         serializer_instance = Expenseserializer(instance)
 
@@ -86,6 +96,8 @@ class ExpenseRetrieveUpdateDeleteView(APIView):
     def put(self, request, pk=None):
         
         instance = get_object_or_404(Expense, id=pk)
+
+        self.check_object_permissions(request,instance)
 
         form_data = request.data
 
@@ -104,6 +116,8 @@ class ExpenseRetrieveUpdateDeleteView(APIView):
     def delete(self,request,pk=None):
 
         instance = get_object_or_404(Expense,id=pk)
+
+        self.check_object_permissions(request,instance)
 
         instance.delete()
 
