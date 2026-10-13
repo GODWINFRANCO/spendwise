@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.db.models import Sum
+from datetime import datetime
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -38,8 +40,6 @@ class GetMeView(APIView):
         auth_user = request.user
 
         instance =User.objects.get(username=auth_user)
-
-        self.check_object_permissions(request,instance)
 
         serializer_instance = SignupSerializer(instance)
 
@@ -122,3 +122,47 @@ class ExpenseRetrieveUpdateDeleteView(APIView):
         instance.delete()
 
         return Response(data={"message":"deleted"})
+
+class ExpenseSummaryView(APIView):
+
+    authentication_classes=[authentication.TokenAuthentication]
+        
+    permission_classes =[permissions.IsAuthenticated]
+
+    def get(self,request):
+
+        response_data = {
+            "todays_total":0
+                         }
+
+        current_date = datetime.now().today()
+
+        current_month = datetime.now().month
+
+        current_year = datetime.now().year
+
+        #monthly summary
+
+        monthly_transaction = Expense.objects.filter(owner=request.user,created_at__month=current_month,created_at__year=current_year)
+
+        if monthly_transaction:
+
+            monthly_total = monthly_transaction.values("amount").aggregate(total=Sum("amount")).get("total")
+
+            response_data["monthly_total"] = monthly_total
+
+        #todays summary
+
+        today_transaction = Expense.objects.filter(owner=request.user,created_at__date=current_date)
+
+        if today_transaction:
+
+            todays_total = today_transaction.values("amount").aggregate(total=Sum("amount")).get("total")
+
+            category_summary = today_transaction.values("category").annotate(total=Sum("amount"))
+
+            response_data["todays_total"]=todays_total
+
+            response_data["category_summary"]=category_summary
+
+        return Response(data=response_data)

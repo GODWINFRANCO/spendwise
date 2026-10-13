@@ -71,7 +71,13 @@ Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
 #api call for delete expense
 ###
-DELETE  http://127.0.0.1:8000/v1/spending/expense/1/
+DELETE  http://127.0.0.1:8000/v1/spending/expense/5/
+Accept: application/json
+Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
+
+#api call for fetching expense summary
+###
+GET  http://127.0.0.1:8000/v1/spending/expense/summary/
 Accept: application/json
 Authorization: Token 18285b3385eca2c456138c34a8671ec91cdb6344
 
